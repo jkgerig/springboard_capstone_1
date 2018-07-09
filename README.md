@@ -136,7 +136,7 @@ It looks like the majority of our patients have only 1 appointment, but there ar
 
 Having an idea of how appointments are spread out throughout the week will provide some context for the data and how appointments are scheduled in these clinics. If, for example, there were no appointments scheduled on a specific day, that might indicate that we either have some missing data or the clinic is closed on that day, which might have implications for appointments on the surrounding weekdays.
 
-![png](reference/output_8_0.png)
+![png](references/output_8_0.png)
 
 Most appointments are clustered in the beginning of the week, with the least coming on Thursday followed by Friday. This may just be representative of the scheduling practices of the clinics, or it could indicate that our dataset ends on a Wednesday.
 
@@ -144,7 +144,7 @@ Most appointments are clustered in the beginning of the week, with the least com
 
 Getting an overall sense of the age distribution of the patients in our dataset provides context for the patient population at these clinics.
 
-![png](reference/output_11_0.png)
+![png](references/output_11_0.png)
 
 By increasing the number of bins in this histogram, we are seeing age groups of roughly one year. The regular spikes in patient counts indicates that ages in our dataset may have been rounded, and are not entirely accurate.
 
@@ -152,7 +152,7 @@ By increasing the number of bins in this histogram, we are seeing age groups of 
 
 It would be helpful to know if males and females schedule appointments at a rate representative of the patient population, or if one gender schedules appointments at a higher rate than the other. For example, a higher number of appointments by females could indicate that many of the appointments are for pregnancy-related visits.
 
-![png](reference/output_14_0.png)
+![png](references/output_14_0.png)
 
 The ratio of males to females is nearly identical for both patients and appointments, meaning there is no significant difference between the genders in how many appointments they have.
 
@@ -160,7 +160,7 @@ The ratio of males to females is nearly identical for both patients and appointm
 
 Lastly, it would be helpful to get a general overview of the timeline of our data. A simple line plot showing the number of appointments over time will help give some context.
 
-![png](reference/output_17_0.png)
+![png](references/output_17_0.png)
 
 Interestingly, there is a dramatic drop off around June 15th. If this was a holiday, or some other major event, that could have implications for appointments on surrounding dates.
 
