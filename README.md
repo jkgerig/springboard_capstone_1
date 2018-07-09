@@ -207,7 +207,223 @@ The Pearson Correlation Coefficient between Gender and No_show is r = -0.0041
 
 ## Models
 
+**Setup**
 
+```python
+# package imports
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix, classification_report
+```
+
+```python
+# import pickle file
+df_appointments = pd.read_pickle('../data/interim/appointments_df.pickle')
+df_clean = pd.read_pickle('../data/interim/clean_df.pickle')
+```
+
+```python
+# set index for dataframe
+df_clean.set_index('Appointment_ID', inplace=True)
+```
+
+```python
+# add columns from df_clean back into df_appointments
+df_model = df_appointments.join(df_clean, rsuffix='_clean')
+```
+
+```python
+# remove duplicate columns from model dataframe
+drop_columns = ['Patient_ID_clean',
+                'Gender_clean',
+                'Scheduled_Date_clean',
+                'Appointment_Date_clean',
+                'SMS_sent_clean',
+                'No_show_clean',
+                'Neighborhood']
+df_model.drop(columns=drop_columns, inplace=True)
+```
+
+```python
+# create new column: days_diff to show number of days between scheduled date and appointment date
+df_model['days_diff'] = df_model.date_diff.dt.days
+```
+
+```python
+# create dummy vars for days of week
+df_model = df_model.join(pd.get_dummies(df_model.Appointment_Date.dt.dayofweek))
+```
+
+```python
+# clean up column names
+df_model.columns = ['Patient_ID',
+                    'Gender',
+                    'Scheduled_Date',
+                    'Appointment_Date',
+                    'SMS_sent',
+                    'No_show',
+                    'date_diff',
+                    'Age',
+                    'Welfare',
+                    'Hypertension',
+                    'Diabetes',
+                    'Alcoholism',
+                    'Disability',
+                    'days_diff',
+                    'Mon',
+                    'Tue',
+                    'Wed',
+                    'Thu',
+                    'Fri',
+                    'Sat']
+```
+
+```python
+# extraneous columns not needed for modeling
+unneeded_columns = ['Patient_ID',
+                    'Scheduled_Date',
+                    'Appointment_Date',
+                    'No_show',
+                    'date_diff',
+                    'Gender']
+```
+
+```python
+# Need to produce arrays for the features and the response variable
+y = df_model['No_show'].values
+X = df_model.drop(columns=unneeded_columns).values
+```
+
+```python
+# rename 'Yes'/'No' to 'No-show'/'Show' for clarity
+rename = y.copy()
+for key, value in {'Yes': 'No-show', 'No': 'Show'}.items(): rename[y == key] = value
+y = rename
+```
+
+**Logistic Regression**
+
+```python
+# Create training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.4, random_state=42)
+
+# Create the classifier: logreg
+logreg = LogisticRegression()
+
+# Fit the classifier to the training data
+logreg.fit(X_train, y_train)
+
+# Predict the labels of the test set: y_pred
+y_pred = logreg.predict(X_test)
+
+# Compute and print the confusion matrix and classification report
+logreg_cm = confusion_matrix(y_test, y_pred)
+true_neg, false_pos, false_neg, true_pos = logreg_cm.ravel()
+print('\nConfusion Matrix')
+print(logreg_cm)
+print('True Negative (True Show):\t', true_neg)
+print('False Positive (False No-show):\t', false_pos)
+print('False Negative (False Show):\t', false_neg)
+print('True Positive (True No-show):\t', true_pos)
+
+logreg_cr = classification_report(y_test, y_pred)
+print('\nClassification Report')
+print(logreg_cr)
+```
+    
+    Confusion Matrix
+    [[  154  8688]
+     [  319 35050]]
+    True Negative (True Show):	 154
+    False Positive (False No-show):	 8688
+    False Negative (False Show):	 319
+    True Positive (True No-show):	 35050
+    
+    Classification Report
+                 precision    recall  f1-score   support
+    
+        No-show       0.33      0.02      0.03      8842
+           Show       0.80      0.99      0.89     35369
+    
+    avg / total       0.71      0.80      0.72     44211
+
+**GridSearchCV**
+
+```python
+# setup hyperparameter grid
+c_space = np.logspace(-5, 8, 15)
+param_grid = {'C': c_space}
+```
+
+```python
+# instantiate GridSearchCV object
+logreg_cv = GridSearchCV(logreg, param_grid, cv=5)
+```
+
+```python
+# fit data
+logreg_cv.fit(X_train, y_train)
+```
+
+    GridSearchCV(cv=5, error_score='raise',
+           estimator=LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+              intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
+              penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
+              verbose=0, warm_start=False),
+           fit_params=None, iid=True, n_jobs=1,
+           param_grid={'C': array([1.00000e-05, 8.48343e-05, 7.19686e-04, 6.10540e-03, 5.17947e-02,
+           4.39397e-01, 3.72759e+00, 3.16228e+01, 2.68270e+02, 2.27585e+03,
+           1.93070e+04, 1.63789e+05, 1.38950e+06, 1.17877e+07, 1.00000e+08])},
+           pre_dispatch='2*n_jobs', refit=True, return_train_score='warn',
+           scoring=None, verbose=0)
+
+```python
+# print tuned parameter and score
+print('Tuned Logistic Regression Parameters: {}'.format(logreg_cv.best_params_))
+print('Best score is {}'.format(logreg_cv.best_score_))
+```
+
+    Tuned Logistic Regression Parameters: {'C': 0.0007196856730011522}
+    Best score is 0.7945141443995416
+
+```python
+y_pred_cv = logreg_cv.predict(X_test)
+```
+
+```python
+# Compute and print the confusion matrix and classification report
+logreg_cv_cm = confusion_matrix(y_test, y_pred_cv)
+true_neg_cv, false_pos_cv, false_neg_cv, true_pos_cv = logreg_cv_cm.ravel()
+print('\nConfusion Matrix (GridSearchCV)')
+print(logreg_cv_cm)
+print('True Negative (True Show):\t', true_neg_cv)
+print('False Positive (False No-show):\t', false_pos_cv)
+print('False Negative (False Show):\t', false_neg_cv)
+print('True Positive (True No-show):\t', true_pos_cv)
+
+logreg_cv_cr = classification_report(y_test, y_pred_cv)
+print('\nClassification Report (GridSearchCV)')
+print(logreg_cv_cr)
+```
+    
+    Confusion Matrix (GridSearchCV)
+    [[  162  8680]
+     [  253 35116]]
+    True Negative (True Show):	 162
+    False Positive (False No-show):	 8680
+    False Negative (False Show):	 253
+    True Positive (True No-show):	 35116
+    
+    Classification Report (GridSearchCV)
+                 precision    recall  f1-score   support
+    
+        No-show       0.39      0.02      0.04      8842
+           Show       0.80      0.99      0.89     35369
+    
+    avg / total       0.72      0.80      0.72     44211
 
 # Limitations
 
