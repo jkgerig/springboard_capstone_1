@@ -4,9 +4,13 @@
 
 Based on: https://www.kaggle.com/joniarroba/noshowappointments
 
+---
+
 **Overview**
 
 This repo contains the work for my first capstone project as part of the Springboard [Data Science Career Track](https://www.springboard.com/workshops/data-science-career-track/) curriculum. 
+
+---
 
 **Contents**
 
@@ -23,23 +27,33 @@ This repo contains the work for my first capstone project as part of the Springb
 - [Conclusions](#conclusions)
 - [Reference](#reference)
 
+---
+
 # Project Proposal
+
+---
 
 ## Problem Statement
 
 Missed appointments are inefficient and costly to both patients and clinicians. Patients often must pay a fee, clinics waste time and effort adjusting their schedule, and other patients miss an opportunity to be seen. Without a method for determining which patients are likely to miss their appointments, clinic staff must spend time contacting all patients with reminders. By identifying those patients most likely to miss an appointment, clinics can take a proactive approach and focus their efforts on reminding and/or rescheduling these patients.
 
+---
+
 ## Potential Clients
 
 Physicians, dentists, and other clinicians who schedule outpatient appointments would all benefit from having a method to determine which patients were prone to miss appointments. While patients would certainly benefit from an improved scheduling system, clinics possess the data necessary to predict patient behavior, and would therefore be the intended clients for this project. Clinics could use the methodology developed in this project to predict when a patient is likely to miss an appointment. With this knowledge, they could contact patients in advance of the appointment and identify alternate dates and times. Depending on the results of this analysis, clinics could also predict when appointments are likely to be cancelled due to outside events, such as inclement weather.
+
+---
 
 ## Data
 
 I will use a Kaggle [dataset](https://www.kaggle.com/joniarroba/noshowappointments) as the primary dataset for this project. Depending on the completeness and granularity of the data, I may also include data on weather conditions - likely from [NOAA](https://www.ncdc.noaa.gov/data-access).
 
-The Kaggle dataset contains patient-level information, including when the appointment was scheduled, the time of the appointment, whether or not a reminder was sent, some basic demographics, and an outcome variable showing whether or not the patient was a no-show. The goal of this analysis will be to develop a method for predicting whether or not the patient kept the appointment using the data provided (and perhaps additional data if applicable). Some of the variables can be used as-is, but some additional variables that might be predictive can be calculated from the data. For example, the dataset contains fields for both the time of the appointment and the time the appointment was made. Calculating a new variable for the difference between these times could be useful in predicting the outcome of a no-show appointment.
+---
 
 # Methods
+
+---
 
 ## Inital Investigation
 
@@ -51,11 +65,15 @@ The Kaggle dataset contains patient-level information, including when the appoin
 - Recode missing values
 - Split/combine columns as needed (ex: Date and Time could be in separate fields)
 
+---
+
 **Clean Data** *(pandas df)*
 
 - Null count per column
 - "use" for each column (what its purpose is in the analysis)
 - look at unique values (ex: Neighborhoods)
+
+---
 
 **Preliminary Analysis**
 
@@ -64,6 +82,8 @@ The Kaggle dataset contains patient-level information, including when the appoin
     - histogram of appointments per day of week
 - Counts for any fields used for categorization/grouping
 
+---
+
 **Notes on Raw Data**
 
 - All fields appear to have no null values.
@@ -71,6 +91,9 @@ The Kaggle dataset contains patient-level information, including when the appoin
 - Date(time?) fields: (need to convert)
     - ScheduledDay
     - AppointmentDay
+
+---
+
 - Rename:
     - 'PatientId' --> 'Patient_ID'
     - 'AppointmentID' --> 'Appointment_ID'
@@ -82,10 +105,15 @@ The Kaggle dataset contains patient-level information, including when the appoin
     - 'Handcap' --> 'Disability'
     - 'SMS_received' --> 'SMS_sent'
     - 'No-show' --> 'No_show'
+
+---
+
 - Appointment_ID is unique ID
 - Age ranges from -1 to 115 (plot this)
 - Welfare, Hypertension, Diabetes, Alcoholism, and SMS_sent seem ok
 - Disability has a max of 4 (thought this was supposed to be binary...)
+
+---
 
 **Next steps:**
 
@@ -97,7 +125,11 @@ The Kaggle dataset contains patient-level information, including when the appoin
     - Disability
     - No_show
 
+---
+
 ## Data Wrangling
+
+---
 
 This notebook begins with importing the raw dataset for my capstone project and moves through some basic cleaning and reorganization to produce a pandas DataFrame ready for further analysis. Future exploration will undoubtedly reveal additional data wrangling steps that need to be taken, but for now the dataset produced by this notebook is clean enough that it can be investigated in much more detail than in its raw form. The overall steps taken in this notebook are as follows:
 
@@ -108,53 +140,59 @@ This notebook begins with importing the raw dataset for my capstone project and 
 5. Copy to new, clean DataFrame
 6. Create Patients and Appointments DataFrames
 
+---
+
 **Counts (Appointments per Patient)**
 
 The records in this dataset represent specific appointments, not just individual patients. There may be redundant data which is really patient level data that is contained in the appointment level dataset. To start investigating this, it will be helpful to get a general sense of how many appointments the average patient has in our dataset.
 
 It looks like the majority of our patients have only 1 appointment, but there are several patients with multiple appointments.
 
+---
+
 **Bar Plot (Appointments per Day of Week)**
 
-Having an idea of how appointments are spread out throughout the week will provide some context for the data and how appointments are scheduled in these clinics. If, for example, there were no appointments scheduled on a specific day, that might indicate that we either have some missing data or the clinic is closed on that day, which might have implications for appointments on the surrounding weekdays.
-
-![png](references/output_8_0.png)
+![png](../references/output_8_0.png)
 
 Most appointments are clustered in the beginning of the week, with the least coming on Thursday followed by Friday. This may just be representative of the scheduling practices of the clinics, or it could indicate that our dataset ends on a Wednesday.
 
+---
+
 **Histogram (Patients by Age)**
 
-Getting an overall sense of the age distribution of the patients in our dataset provides context for the patient population at these clinics.
-
-![png](references/output_11_0.png)
+![png](../references/output_11_0.png)
 
 By increasing the number of bins in this histogram, we are seeing age groups of roughly one year. The regular spikes in patient counts indicates that ages in our dataset may have been rounded, and are not entirely accurate.
 
+---
+
 **Comparison (Percent of Patients by Gender vs Percent of Appointments by Gender)**
 
-It would be helpful to know if males and females schedule appointments at a rate representative of the patient population, or if one gender schedules appointments at a higher rate than the other. For example, a higher number of appointments by females could indicate that many of the appointments are for pregnancy-related visits.
-
-![png](references/output_14_0.png)
+![png](../references/output_14_0.png)
 
 The ratio of males to females is nearly identical for both patients and appointments, meaning there is no significant difference between the genders in how many appointments they have.
 
+---
+
 **Time Series Plot (Appointments by Date)**
 
-Lastly, it would be helpful to get a general overview of the timeline of our data. A simple line plot showing the number of appointments over time will help give some context.
-
-![png](references/output_17_0.png)
+![png](../references/output_17_0.png)
 
 Interestingly, there is a dramatic drop off around June 15th. If this was a holiday, or some other major event, that could have implications for appointments on surrounding dates.
 
+---
+
 # Results
 
-## Inferential Statistics
+---
 
-This notebook explores some basic statistics regarding the data, in particular some pearson correlation coefficients between various sets of binary variables.
+## Inferential Statistics
 
 **Means**
 
 The mean patient age is 33.3 years for males and 38.6 years for females.
+
+---
 
 **Pearson Correlation Coefficient**
 
@@ -168,6 +206,8 @@ The Pearson Correlation Coefficient between hypertension and diabetes is r = 0.4
 | **Hypertension**    | 0.14        | 0.06     | 0.20  |
 | **Total**           | 0.93        | 0.07     | 1.00  |
 
+---
+
 *SMS Sent and No-show*
 
 The Pearson Correlation Coefficient between SMS_sent and No_show is r = 0.1264
@@ -177,6 +217,8 @@ The Pearson Correlation Coefficient between SMS_sent and No_show is r = 0.1264
 | **No SMS**   | 0.57  | 0.11    | 0.68  |
 | **SMS Sent** | 0.23  | 0.09    | 0.32  |
 | **Total**    | 0.80  | 0.20    | 1.00  |
+
+---
 
 *Gender and No-show*
 
@@ -188,7 +230,11 @@ The Pearson Correlation Coefficient between Gender and No_show is r = -0.0041
 | **Male**   | 0.28  | 0.07    | 0.35  |
 | **Total**  | 0.80  | 0.20    | 1.00  |
 
+---
+
 ## Models
+
+---
 
 **Setup**
 
@@ -200,6 +246,8 @@ The Pearson Correlation Coefficient between Gender and No_show is r = -0.0041
 - Remove columns not needed for model
 4. Produce arrays for feature and response variables
 
+---
+
 **Logistic Regression**
 
 1. Create training and test sets
@@ -207,6 +255,8 @@ The Pearson Correlation Coefficient between Gender and No_show is r = -0.0041
 3. Fit the classifier to the training data
 4. Predict the labels of the test set: y_pred
 5. Compute and print the confusion matrix and classification report
+
+---
 
 *Confusion Matrix*
 
@@ -224,6 +274,8 @@ The Pearson Correlation Coefficient between Gender and No_show is r = -0.0041
 | False Negative | False Show    | 8688  |
 | True Positive  | True No-show  | 154   |
     
+---
+
 *Classification Report*
 
 |                 | precision | recall | f1-score | support |
@@ -231,6 +283,8 @@ The Pearson Correlation Coefficient between Gender and No_show is r = -0.0041
 | **No-show**     | 0.33      | 0.02   | 0.03     | 8842    |
 | **Show**        | 0.80      | 0.99   | 0.89     | 35369   |
 | **avg / total** | 0.71      | 0.80   | 0.72     | 44211   |
+
+---
 
 **GridSearchCV**
 
@@ -240,9 +294,13 @@ The Pearson Correlation Coefficient between Gender and No_show is r = -0.0041
 4. Print tuned parameter and score
 5. Compute and print the confusion matrix and classification report
 
+---
+
 *Tuned Logistic Regression Parameters:* {'C': 0.0007196856730011522}
 
 *Best score:* 0.7945141443995416
+
+---
 
 *Confusion Matrix*
 
@@ -260,6 +318,8 @@ The Pearson Correlation Coefficient between Gender and No_show is r = -0.0041
 | False Negative | False Show    | 8680  |
 | True Positive  | True No-show  | 162   |
     
+---
+
 *Classification Report*
 
 |                 | precision | recall | f1-score | support |
@@ -268,21 +328,8 @@ The Pearson Correlation Coefficient between Gender and No_show is r = -0.0041
 | **Show**        | 0.80      | 0.99   | 0.89     | 35369   |
 | **avg / total** | 0.72      | 0.80   | 0.72     | 44211   |
 
+---
+
 # Conclusions
 
 In the overall effort to predict whether or not a patient will miss their scheduled appointment based on the information available in this dataset, the logistic regression model was not successful. After the GridSearch hyperparameter tuning, the logistic regression model correctly classified only 162 of the 8842 no-show appointments in the testing set, while also incorrectly classifying 253 appointments as no-shows which were actually appointments that patients kept.
-
-When I first chose this dataset, I had hoped to incorporate some additional data related to the location of each patient relative to the clinic. However, I learned that the neighborhood variable in this dataset did not refer to the patient's location, but rather the clinic location. Given additional clinical and/or socioeconomic data on these patients, it may be possible to improve the precision and recall of the model.
-
-# Reference
-
-- Project [proposal](references/proposal.md)
-- Original dataset [documentation](references/noshowappointments.md)
-- [Statistics write-up](references/inferential_statistics.md)
-- [Milestone report](references/milestone_report.md)
-- [Data Acquisition and Initial Exploration](notebooks/1.0-jkg-initial-data-exploration.ipynb)
-- [Data Wrangling](notebooks/2.0-jkg-data-wrangling.ipynb)
-- [Data Story](notebooks/3.0-jkg-data-story.ipynb)
-- [Inferential Statistics](notebooks/3.5-jkg-inferential-stats.ipynb)
-- [Modeling](notebooks/4.0-jkg-models.ipynb)
-- [Slides](references/slides.pdf)
