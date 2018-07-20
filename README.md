@@ -21,6 +21,7 @@ This repo contains the work for my first capstone project as part of the Springb
     - [Inferential Statistics](#inferential-statistics)
     - [Models](#models)
 - [Conclusions](#conclusions)
+- [Limitations](#limitations)
 - [Reference](#reference)
 
 # Project Proposal
@@ -272,7 +273,11 @@ The Pearson Correlation Coefficient between Gender and No_show is r = -0.0041
 
 In the overall effort to predict whether or not a patient will miss their scheduled appointment based on the information available in this dataset, the logistic regression model was not successful. After the GridSearch hyperparameter tuning, the logistic regression model correctly classified only 162 of the 8842 no-show appointments in the testing set, while also incorrectly classifying 253 appointments as no-shows which were actually appointments that patients kept.
 
+# Limitations
+
 When I first chose this dataset, I had hoped to incorporate some additional data related to the location of each patient relative to the clinic. However, I learned that the neighborhood variable in this dataset did not refer to the patient's location, but rather the clinic location. Given additional clinical and/or socioeconomic data on these patients, it may be possible to improve the precision and recall of the model.
+
+Two approaches that might help improve the predictions are using a different model, something more sophisticated than logistic regression such as a random forest, and also additional feature engineering. For example, many patients had multiple appointments. Looking at the timing of these appointments may reveal additional insight into why patients may miss appointments.
 
 # Reference
 
